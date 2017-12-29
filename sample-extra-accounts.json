@@ -1,0 +1,50 @@
+[
+  {
+    "password": "asdf",
+    "keystore": {
+      "address": "e434bae7a52f5fee3994209da440f73bf01ddb76",
+      "crypto": {
+        "cipher": "aes-128-ctr",
+        "ciphertext": "9f93a9bea5c07770284428aeb72849b28847d086647865c936fda9083d2d40e7",
+        "cipherparams": {
+          "iv": "2f933c3a5db1317540d8052d435d5c32"
+        },
+        "kdf": "scrypt",
+        "kdfparams": {
+          "dklen": 32,
+          "n": 262144,
+          "p": 1,
+          "r": 8,
+          "salt": "5fe0ee14f5de676a72bec96ba8b76e0c3a9859b8ae832608ff0645376b628e45"
+        },
+        "mac": "29d6ef56264b62a050b1407dab66cd9f766cf8a5d78ace3ff1b1a648ffb74708"
+      },
+      "id": "eafd2fdb-341a-409e-85aa-87dc23761c6a",
+      "version": 3
+    }
+  },
+  {
+    "password": "ghjk",
+    "keystore": {
+      "address": "8cc8da168762e1c8f27cb36be90d23e075b391ee",
+      "crypto": {
+        "cipher": "aes-128-ctr",
+        "ciphertext": "c1ba325aa8764170897a0c8591c1c147efde5b502e90ad59a4c98dd3518ca553",
+        "cipherparams": {
+          "iv": "f4aec3e31b4e21e4e473aca0719757e7"
+        },
+        "kdf": "scrypt",
+        "kdfparams": {
+          "dklen": 32,
+          "n": 262144,
+          "p": 1,
+          "r": 8,
+          "salt": "b60b28a8523261467649f16bd51213c1614d6fe7f7a7263b64d1a5fdb01cf63b"
+        },
+        "mac": "457f53fe2ad4072642aa6c584b714dc89f435108502d44129e6a57519697d1a8"
+      },
+      "id": "455d2688-a079-4ee3-bc37-0abf95c1b7b3",
+      "version": 3
+    }
+  }
+]
