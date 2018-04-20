@@ -1,4 +1,4 @@
-FROM alpine:3.5
+FROM alpine:3.7
 ARG GETH_VERSION
 RUN \
   apk add --update bash git go make gcc musl-dev linux-headers curl jq       && \
