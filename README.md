@@ -24,5 +24,7 @@ For example (creates 10 accounts on startup): `docker run --rm -it -p 8545:8545 
 ### Tweak the genesis block
 One may mount a custom genesis block to `/cliquebait/cliquebait.json` to really fine tune their network's behavior. The only key thing to keep in mind is that the `extraData` field MUST remain the same. Cliquebait supplies the address of an ephemeral "authority" for the network on startup, and for the image to behave properly this must remain as-is.
 
+Alternatively, you may pass in a genesis JSON directly via the `GENESIS_JSON` environment variable. The same rules regarding `extraData` apply!
+
 ### Use specific accounts
 If you have an account JSON file compatible with geth's keystore, you may embed it into a specially crafted JSON file (see `sample-extra-accounts.json`) and supply it to cliquebait. You may then mount this file as `/extra-accounts.json`, and cliquebait will allocate ether and unlock the account for use in Web3. Note that this involves supplying the password to the account in plaintext, so be careful! If you prefer not to have the account unlocked, you may simply add an `alloc` in the genesis block.

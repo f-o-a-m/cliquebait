@@ -23,14 +23,13 @@ function make_account() {
 
 function initialize_geth() {
 	mkdir -p $GETHROOT
-	GENESIS_JSON=`cat /tmp/genesis.json`
 	# Echo back the genesis block, for debugging purposes.
 	# It'll get echoed again before the geth node itself runs
 	echo "Genesis block is:"
-	echo "$GENESIS_JSON"
+	cat /tmp/genesis.json
 
 	# Write it to /gethdata/genesis.json
-	echo $GENESIS_JSON > $GETHROOT/genesis.json
+	cp /tmp/genesis.json $GETHROOT/genesis.json
 
 	# Run geth init to initialize geth's storage
 	# and feed it the genesis block we just persisted
@@ -70,7 +69,13 @@ function run_geth_bare() {
 }
 
 # move the base cliquebait genesis json to our working one
-cp /cliquebait/cliquebait.json /tmp/genesis.json
+if [ -z "$GENESIS_JSON" ]; then
+	cp /cliquebait/cliquebait.json /tmp/genesis.json
+else
+	echo "Using genesis base from environment variable"
+	echo "$GENESIS_JSON" > /tmp/genesis.json
+fi
+
 
 # geth init wipes our keystore, so we have to make a temporary one
 mkdir -p /tmp/keystore
