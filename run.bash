@@ -115,4 +115,4 @@ ACCOUNTS_TO_UNLOCK=`cat /tmp/accounts | tr '\n' ',' | sed s/,$//`
 mv /tmp/keystore $GETHDATADIR/
 
 run_geth_bare --networkid="$CHAINID" --mine --minerthreads 1 --etherbase $DEPLOY_ACCOUNT_ADDRESS \
-              --unlock "$ACCOUNTS_TO_UNLOCK" --password /tmp/account-passwords
+              --unlock "$ACCOUNTS_TO_UNLOCK" --password /tmp/account-passwords $@
