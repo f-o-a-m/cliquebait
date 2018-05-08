@@ -2,7 +2,7 @@
 
 export GETHROOT=/gethdata
 export GETHDATADIR="$GETHROOT/ethereum"
-export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain="*" --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --ws --wsaddr 0.0.0.0 --wsorigins="*" --wsapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" '
+export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain="*" --rpcvhosts=* --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --ws --wsaddr 0.0.0.0 --wsorigins="*" --wsapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" '
 export DEFAULT_PASSWORD_PATH=${DEFAULT_PASSWORD_PATH:-"/cliquebait/default-password"}
 export ACCOUNTS_TO_CREATE=${ACCOUNTS_TO_CREATE:-"5"}
 
