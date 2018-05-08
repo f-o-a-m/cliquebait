@@ -13,7 +13,7 @@ Very true! However, `geth` only has `--dev` mode as of v1.7.3, which also introd
 ## Quickstart
 Simply run `docker run --rm -it -p 8545:8545 foamspace/cliquebait:latest` and connect to `http://localhost:8545/` using your Web3 interface of choice!
 
-
+Note: If you plan to use the Remix IDE, you may need to enable CORS in Geth. This will be done by default in the future, but in the meantime you may run `docker run --rm -it -p 8545:8545 foamspace/cliquebait:latest /cliquebait/run.bash --rpccorsdomain='*'` instead.
 ## Advanced Usage
 
 ### Create more (or less) accounts on startup
