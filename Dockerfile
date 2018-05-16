@@ -13,4 +13,5 @@ EXPOSE 8545
 EXPOSE 30303
 EXPOSE 30303/udp
 COPY . /cliquebait
+ENV GETH_VERSION=$GETH_VERSION
 CMD "/cliquebait/run.bash"

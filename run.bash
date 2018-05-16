@@ -1,10 +1,18 @@
 #!/bin/bash
 
+VERCOMP='/cliquebait/vercomp.bash'
+STRIPPED_GETH_VERSION=`echo $GETH_VERSION | sed s/v//`
+
 export GETHROOT=/gethdata
 export GETHDATADIR="$GETHROOT/ethereum"
-export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain="*" --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --ws --wsaddr 0.0.0.0 --wsorigins="*" --wsapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" '
+export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" '
 export DEFAULT_PASSWORD_PATH=${DEFAULT_PASSWORD_PATH:-"/cliquebait/default-password"}
 export ACCOUNTS_TO_CREATE=${ACCOUNTS_TO_CREATE:-"5"}
+
+if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.8.0; then
+  echo 'adding --rpcvhosts=* as we are in geth >= v1.8.0'
+  export RPCARGS="${RPCARGS} --rpcvhosts=* "
+fi
 
 if [[ "$ACCOUNTS_TO_CREATE" -lt "1" ]]; then
   echo "ACCOUNTS_TO_CREATE must be at least 1 (got $ACCOUNTS_TO_CREATE)"
