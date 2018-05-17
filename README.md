@@ -27,3 +27,17 @@ Alternatively, you may pass in a genesis JSON directly via the `GENESIS_JSON` en
 
 ### Use specific accounts
 If you have an account JSON file compatible with geth's keystore, you may embed it into a specially crafted JSON file (see `sample-extra-accounts.json`) and supply it to cliquebait. You may then mount this file as `/extra-accounts.json`, and cliquebait will allocate ether and unlock the account for use in Web3. Note that this involves supplying the password to the account in plaintext, so be careful! If you prefer not to have the account unlocked, you may simply add an `alloc` in the genesis block.
+
+### Persist the blockchain
+If you want to keep your chain around for whatever reason, you may mount a volume or local folder to `/cbdata` inside the container. This implies that you won't be able to change the genesis block or change the number of created accounts (as these are all done when the blockchain is first fired up). However, this does mean that the accounts that get generated are much more easily accessible, as you can find the keystore directly on your local machine.
+
+For example:
+
+```shell
+mkdir ~/my-persisted-cb
+docker run --rm -it -p 8545:8545 -v ~/my-persisted-cb:/cbdata foamspace/cliquebait:latest
+```
+
+You will then be able to find the keystore Geth is using at `~/my-persisted-cb/ethereum/keystore`. To find the password for a given account,
+you may look at `~/my-persisted-cb/_cliquebait/accounts` and `~/my-persisted-cb/_cliquebait/account-passwords`.
+
