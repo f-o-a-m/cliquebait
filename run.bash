@@ -9,6 +9,7 @@ export GETHDATADIR="$GETHROOT/ethereum"
 export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" '
 export DEFAULT_PASSWORD_PATH=${DEFAULT_PASSWORD_PATH:-"/cliquebait/default-password"}
 export ACCOUNTS_TO_CREATE=${ACCOUNTS_TO_CREATE:-"5"}
+export EXTERNAL_ALLOCS=${EXTERNAL_ALLOCS:-""}
 
 if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.8.0; then
 	echo 'adding --rpcvhosts=* as we are in geth >= v1.8.0'
@@ -45,7 +46,7 @@ function initialize_geth() {
 # $1 = source genesis, $2 = the FULL address (with 0x)
 function give_ether_in_genesis() {
 	mkdir -p /tmp/cliquebait/give_ether_in_genesis
-	BAREADDRESS=`echo $address | sed s/0x//`
+	BAREADDRESS=`echo $2 | sed s/0x//`
 	MOREALLOCS="{\"$BAREADDRESS\": {\"balance\": \"0x200000000000000000000000000000000000000000000000000000000000000\"}}"
 	cat $1 | jq ".alloc += $MOREALLOCS" > /tmp/cliquebait/give_ether_in_genesis/new_genesis.json
 	rm $1
@@ -120,6 +121,17 @@ function initialize_cliquebait() {
 
 	# give all the loaded accounts tons of ether
 	for address in `cat $CBROOT/accounts`; do give_ether_in_genesis $CBROOT/genesis.json $address; done
+
+	# give accounts listed in $EXTERNAL_ALLOCS some ether as well
+	for extra in $(echo $EXTERNAL_ALLOCS | tr ',' ' '); do
+		cleaned_extra=$(echo $extra | sed -e 's/^0x//' | grep -o '^[0-9A-Fa-f]\{40\}$')
+		if [ -z "$cleaned_extra" ]; then
+			echo $extra is an invalid address and will not have any ether allocated.
+		else
+			echo "matched $extra for allocation!"
+			give_ether_in_genesis $CBROOT/genesis.json 0x$cleaned_extra
+		fi
+	done
 
 	# Save our chain ID for when we run geth later
 	cat $CBROOT/genesis.json | jq .config.chainId > $CBROOT/chainid

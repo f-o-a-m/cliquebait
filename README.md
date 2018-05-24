@@ -15,6 +15,18 @@ Simply run `docker run --rm -it -p 8545:8545 foamspace/cliquebait:latest` and co
 
 ## Advanced Usage
 
+### Give some ether to an account you control
+If you're testing with MetaMask, for example, it's often helpful to have some ether allocated to the account that MetaMask has generated for you instead of having to import an ephemeral account.
+You can pass a comma-separated of addresses in the `EXTERNAL_ALLOCS` environment variable to facilitate this. For example:
+
+``docker run --rm -it -p 8545:8545 -e EXTERNAL_ALLOCS=0xAb0B142C3231e58cD7dAc89e91e6a5030E6Bd888` foamspace/cliquebait:latest``
+
+or
+
+``docker run --rm -it -p 8545:8545 -e EXTERNAL_ALLOCS=0x6Af35ddaA6555d357845Fcd5c2C6A322a784c85d,0xAb0B142C3231e58cD7dAc89e91e6a5030E6Bd888,0x7e2A25C20e536B5e8b834Bb84A53bC2F6E2Fc4bB` foamspace/cliquebait:latest``
+
+The mechanism is fairly forgiving, it's case-insensitive and it's OK to omit the `0x` prefix as long as the rest of the address is valid.
+
 ### Create more (or less) accounts on startup
 Simply supply the `ACCOUNTS_TO_CREATE` environment variable to `docker run`. The value must be numeric, in base 10, and at least 1
 
@@ -29,7 +41,7 @@ Alternatively, you may pass in a genesis JSON directly via the `GENESIS_JSON` en
 If you have an account JSON file compatible with geth's keystore, you may embed it into a specially crafted JSON file (see `sample-extra-accounts.json`) and supply it to cliquebait. You may then mount this file as `/extra-accounts.json`, and cliquebait will allocate ether and unlock the account for use in Web3. Note that this involves supplying the password to the account in plaintext, so be careful! If you prefer not to have the account unlocked, you may simply add an `alloc` in the genesis block.
 
 ### Persist the blockchain
-If you want to keep your chain around for whatever reason, you may mount a volume or local folder to `/cbdata` inside the container. This implies that you won't be able to change the genesis block or change the number of created accounts (as these are all done when the blockchain is first fired up). However, this does mean that the accounts that get generated are much more easily accessible, as you can find the keystore directly on your local machine.
+If you want to keep your chain around for whatever reason, you may mount a volume or local folder to `/cbdata` inside the container. This implies that you won't be able to change the genesis block or change the number of created accounts without clearing the mount target and losing your chain (as these are all done when the blockchain is first fired up). However, this does mean that the accounts that get generated are much more easily accessible, as you can find the keystore directly on your local machine.
 
 For example:
 
