@@ -53,3 +53,83 @@ docker run --rm -it -p 8545:8545 -v ~/my-persisted-cb:/cbdata foamspace/cliqueba
 You will then be able to find the keystore Geth is using at `~/my-persisted-cb/ethereum/keystore`. To find the password for a given account,
 you may look at `~/my-persisted-cb/_cliquebait/accounts` and `~/my-persisted-cb/_cliquebait/account-passwords`.
 
+### MetaMask
+With few tweaks you will be able to run `cliquebait` together with [`MetaMask`](https://metamask.io/).
+
+Here are two common questions and answers for doing that:
+
+#### How to add a MetaMask account to `cliquebait`?
+Create a `cliquebait.json` in your project folder and add following content to it (_Note:_ Replace `METAMASK_ACCOUNT_ADDRESS` with the address of your MetaMask account).
+
+```
+{
+  "config": {
+    "chainId": 420123,
+    "homesteadBlock": 1,
+    "eip150Block": 2,
+    "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "eip155Block": 3,
+    "eip158Block": 3,
+    "byzantiumBlock": 4,
+    "clique": {
+      "period": 1,
+      "epoch": 30000
+    }
+  },
+  "nonce": "0x0",
+  "timestamp": "0x59dbb35a",
+  "extraData": "0x0000000000000000000000000000000000000000000000000000000000000000DEPLOY_ACCOUNT_ADDRESS0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "gasLimit": "0x8000000",
+  "difficulty": "0x1",
+  "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "coinbase": "0x0000000000000000000000000000000000000000",
+  "alloc": {
+      "METAMASK_ACCOUNT_ADDRESS": {
+        "balance": "0x200000000000000000000000000000000000000000000000000000000000000"
+      }
+  },
+  "number": "0x0",
+  "gasUsed": "0x0",
+  "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+}
+
+```
+
+Run `cliquebait` pointing to the `cliquebait.json` you created before ^ (_Note:_ Replace `YOUR_PROJECT_FOLDER` with the absolute path to your `cliquebait.json` ).
+
+```
+sudo docker run --rm -it -p 8545:8545 -v YOUR_PROJECT_FOLDER/cliquebait.json:/cliquebait/cliquebait.json foamspace/cliquebait:latest
+```
+
+Don't forget to connect MetaMask to `http://localhost:8545/` as described in [MetaMask Help -> Using a Local Node](https://metamask.helpscoutdocs.com/article/29-using-a-local-node).
+
+
+
+#### How to import the primary account created by `cliquebait` to MetaMask?
+Run `cliquebait` as described in [Quickstart](#quickstart):
+
+```
+sudo docker run --rm -it -p 8545:8545 foamspace/cliquebait:latest
+```
+
+Check the `CONTAINER ID` of your running docker container:
+```
+sudo docker ps
+CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS              PORTS                                          NAMES
+16270c43261f        foamspace/cliquebait:latest   "/cliquebait/run.bash"   31 minutes ago      Up 31 minutes       0.0.0.0:8545->8545/tcp, 30303/tcp, 30303/udp   mystifying_pike
+```
+
+With that `CONTAINER ID` you can grab the private key of the primary (first) account as follow (Note: Replace `CLIQUEBAIT_CONTAINER_ID` with the `CONTAINER ID` you have checked before ^)
+```
+sudo docker exec -i -t CLIQUEBAIT_CONTAINER_ID /bin/bash -c "cd /gethdata/ethereum/keystore/ && ls . | head -1 | xargs cat"
+```
+
+The output will be similar like this:
+
+```
+{"address":"744832f58aec17a643083472c4a09c01b259c4a8","crypto":{"cipher":"aes-128-ctr","ciphertext":"489bde555f6a4838131f54b21955d7cea4a9f8b00f495c5e9e713fb47edb5f5a","cipherparams":{"iv":"6d6d4e37f5bd27cb7fae9ddbfce33660"},"kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"p":1,"r":8,"salt":"8d172aa5007ce7e6583e062a3f8f63248f3a4a90e8ece4e658cb1b097d10c9d4"},"mac":"a6a3ba2f2dddfd582d5b7bd50523f0a03f08fc17028b722dc688c89350406dc6"},"id":"ab500276-d669-444c-8869-fb621099b09d","version":3}
+```
+
+Copy that `JSON` output (everything from `{"address": ...` to `... "version":3}` and save it as a `primary-account.json` file anywhere on your machine. You do need that `primary-account.json` file to import the primary account at MetaMask as described in [MetaMask Help -> Import Accounts](https://metamask.helpscoutdocs.com/article/19-importing-accounts).
+
+After a successful import of the primary account make sure that MetaMask is connected to `http://localhost:8545/` as described in [MetaMask Help -> Using a Local Node](https://metamask.helpscoutdocs.com/article/29-using-a-local-node).
