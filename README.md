@@ -32,6 +32,11 @@ Simply supply the `ACCOUNTS_TO_CREATE` environment variable to `docker run`. The
 
 For example (creates 10 accounts on startup): `docker run --rm -it -p 8545:8545 -e ACCOUNTS_TO_CREATE=10 foamspace/cliquebait:latest`
 
+### Define value of Wei to allocate to accounts on startup (default value is 1000 Ether)
+Add a value of Wei to `DEFAULT_ALLOC_WEI` environment variable to `docker run`. It have to be a numeric or hexadecimal value.
+
+For example (adds 222 Ether to each account on startup): `docker run --rm -it -p 8545:8545 -e DEFAULT_ALLOC_WEI=222000000000000000000 foamspace/cliquebait:latest`
+
 ### Tweak the genesis block
 One may mount a custom genesis block to `/cliquebait/cliquebait.json` to really fine tune their network's behavior. The only key thing to keep in mind is that the `extraData` field MUST remain the same. Cliquebait supplies the address of an ephemeral "authority" for the network on startup, and for the image to behave properly this must remain as-is.
 
