@@ -10,7 +10,7 @@ export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi "admin,debug,
 export DEFAULT_PASSWORD_PATH=${DEFAULT_PASSWORD_PATH:-"/cliquebait/default-password"}
 export ACCOUNTS_TO_CREATE=${ACCOUNTS_TO_CREATE:-"5"}
 export EXTERNAL_ALLOCS=${EXTERNAL_ALLOCS:-""}
-export DEFAULT_ALLOC_WEI=${DEFAULT_ALLOC_WEI:-"1000000000000000000000"}
+export DEFAULT_ALLOC_WEI=${DEFAULT_ALLOC_WEI:-"0x3635C9ADC5DEA00000"}
 
 if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.8.0; then
 	echo 'adding --rpcvhosts=* as we are in geth >= v1.8.0'
@@ -53,7 +53,7 @@ function give_ether_in_genesis() {
 	if [ -z "$ALLOC_WEI" ]; then
 		echo $DEFAULT_ALLOC_WEI is an invalid value of Wei given by DEFAULT_ALLOC_WEI.
 	else
-		echo "matched $ALLOC_WEI Wei for allocation!"
+		echo "matched $DEFAULT_ALLOC_WEI Wei for allocation!"
 		MOREALLOCS="{\"$BAREADDRESS\": {\"balance\": \"0x$ALLOC_WEI\"}}"
 		cat $1 | jq ".alloc += $MOREALLOCS" > /tmp/cliquebait/give_ether_in_genesis/new_genesis.json
 		rm $1
