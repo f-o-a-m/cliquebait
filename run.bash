@@ -2,6 +2,7 @@
 
 VERCOMP='/cliquebait/vercomp.bash'
 STRIPPED_GETH_VERSION=`echo $GETH_VERSION | sed s/v//`
+DEFAULT_ALLOC_WEI="0x3635C9ADC5DEA00000"
 
 export GETHROOT=/cbdata
 export CBROOT=$GETHROOT/_cliquebait
@@ -10,7 +11,7 @@ export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi "admin,debug,
 export DEFAULT_PASSWORD_PATH=${DEFAULT_PASSWORD_PATH:-"/cliquebait/default-password"}
 export ACCOUNTS_TO_CREATE=${ACCOUNTS_TO_CREATE:-"5"}
 export EXTERNAL_ALLOCS=${EXTERNAL_ALLOCS:-""}
-export DEFAULT_ALLOC_WEI=${DEFAULT_ALLOC_WEI:-"0x3635C9ADC5DEA00000"}
+export ALLOC_WEI=${ALLOC_WEI:-""}
 
 if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.8.0; then
 	echo 'adding --rpcvhosts=* as we are in geth >= v1.8.0'
@@ -44,22 +45,23 @@ function initialize_geth() {
 	geth --datadir=$GETHDATADIR init $GETHROOT/genesis.json
 }
 
-# $1 = source genesis, $2 = the FULL address (with 0x), $3 = allocation of Wei
+# $1 = source genesis, $2 = the FULL address (with 0x)
 function give_ether_in_genesis() {
 	mkdir -p /tmp/cliquebait/give_ether_in_genesis
 	BAREADDRESS=`echo $2 | sed s/0x//`
-	CLEANED_ALLOC_WEI=$(echo $3 | sed -e 's/^0x//')
-	ALLOC_WEI=$(echo $CLEANED_ALLOC_WEI | grep -o "[0-9A-Fa-f]\{${#CLEANED_ALLOC_WEI}\}$")
-	if [ -z "$ALLOC_WEI" ]; then
-		echo $DEFAULT_ALLOC_WEI is an invalid value of Wei given by DEFAULT_ALLOC_WEI.
+	CLEANED_ALLOC_WEI=$(echo $ALLOC_WEI | sed -e 's/^0x//')
+	VALIDATED_ALLOC_WEI=$(echo $CLEANED_ALLOC_WEI | grep -o "[0-9A-Fa-f]\{${#CLEANED_ALLOC_WEI}\}$")
+	if [ -z "$VALIDATED_ALLOC_WEI" ]; then
+		echo "$DEFAULT_ALLOC_WEI Wei will be allocated from default environment variable, because ALLOC_WEI is not set or includes an invalid value of $ALLOC_WEI Wei."
+		MOREALLOCS="{\"$BAREADDRESS\": {\"balance\": \"$DEFAULT_ALLOC_WEI\"}}"
 	else
-		echo "matched $DEFAULT_ALLOC_WEI Wei for allocation!"
-		MOREALLOCS="{\"$BAREADDRESS\": {\"balance\": \"0x$ALLOC_WEI\"}}"
-		cat $1 | jq ".alloc += $MOREALLOCS" > /tmp/cliquebait/give_ether_in_genesis/new_genesis.json
-		rm $1
-		mv /tmp/cliquebait/give_ether_in_genesis/new_genesis.json $1
-		rm -rf /tmp/cliquebait/give_ether_in_genesis
+		echo "Matched $ALLOC_WEI Wei for allocation!"
+		MOREALLOCS="{\"$BAREADDRESS\": {\"balance\": \"0x$VALIDATED_ALLOC_WEI\"}}"
 	fi
+	cat $1 | jq ".alloc += $MOREALLOCS" > /tmp/cliquebait/give_ether_in_genesis/new_genesis.json
+	rm $1
+	mv /tmp/cliquebait/give_ether_in_genesis/new_genesis.json $1
+	rm -rf /tmp/cliquebait/give_ether_in_genesis
 }
 
 # this works because we have DEPLOY_ACCOUNT_ADDRESS in place of the actual hex in the extraData field of the genesis JSON
@@ -128,7 +130,7 @@ function initialize_cliquebait() {
 	fi
 
 	# give all the loaded accounts tons of ether
-	for address in `cat $CBROOT/accounts`; do give_ether_in_genesis $CBROOT/genesis.json $address $DEFAULT_ALLOC_WEI; done
+	for address in `cat $CBROOT/accounts`; do give_ether_in_genesis $CBROOT/genesis.json $address; done
 
 	# give accounts listed in $EXTERNAL_ALLOCS some ether as well
 	for extra in $(echo $EXTERNAL_ALLOCS | tr ',' ' '); do
@@ -137,7 +139,7 @@ function initialize_cliquebait() {
 			echo $extra is an invalid address and will not have any ether allocated.
 		else
 			echo "matched $extra for allocation!"
-			give_ether_in_genesis $CBROOT/genesis.json 0x$cleaned_extra $DEFAULT_ALLOC_WEI
+			give_ether_in_genesis $CBROOT/genesis.json 0x$cleaned_extra
 		fi
 	done
 
