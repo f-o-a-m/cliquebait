@@ -2,6 +2,7 @@
 
 VERCOMP='/cliquebait/vercomp.bash'
 STRIPPED_GETH_VERSION=`echo $GETH_VERSION | sed s/v//`
+DEFAULT_ALLOC_WEI="0x3635C9ADC5DEA00000"
 
 export GETHROOT=/cbdata
 export CBROOT=$GETHROOT/_cliquebait
@@ -10,6 +11,7 @@ export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi "admin,debug,
 export DEFAULT_PASSWORD_PATH=${DEFAULT_PASSWORD_PATH:-"/cliquebait/default-password"}
 export ACCOUNTS_TO_CREATE=${ACCOUNTS_TO_CREATE:-"5"}
 export EXTERNAL_ALLOCS=${EXTERNAL_ALLOCS:-""}
+export ALLOC_WEI=${ALLOC_WEI:-""}
 
 if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.8.0; then
 	echo 'adding --rpcvhosts=* as we are in geth >= v1.8.0'
@@ -47,7 +49,15 @@ function initialize_geth() {
 function give_ether_in_genesis() {
 	mkdir -p /tmp/cliquebait/give_ether_in_genesis
 	BAREADDRESS=`echo $2 | sed s/0x//`
-	MOREALLOCS="{\"$BAREADDRESS\": {\"balance\": \"0x200000000000000000000000000000000000000000000000000000000000000\"}}"
+	CLEANED_ALLOC_WEI=$(echo $ALLOC_WEI | sed -e 's/^0x//')
+	VALIDATED_ALLOC_WEI=$(echo $CLEANED_ALLOC_WEI | grep -o "[0-9A-Fa-f]\{${#CLEANED_ALLOC_WEI}\}$")
+	if [ -z "$VALIDATED_ALLOC_WEI" ]; then
+		echo "$DEFAULT_ALLOC_WEI Wei will be allocated from default environment variable, because ALLOC_WEI is not set or includes an invalid value of $ALLOC_WEI Wei."
+		MOREALLOCS="{\"$BAREADDRESS\": {\"balance\": \"$DEFAULT_ALLOC_WEI\"}}"
+	else
+		echo "Matched $ALLOC_WEI Wei for allocation!"
+		MOREALLOCS="{\"$BAREADDRESS\": {\"balance\": \"0x$VALIDATED_ALLOC_WEI\"}}"
+	fi
 	cat $1 | jq ".alloc += $MOREALLOCS" > /tmp/cliquebait/give_ether_in_genesis/new_genesis.json
 	rm $1
 	mv /tmp/cliquebait/give_ether_in_genesis/new_genesis.json $1
