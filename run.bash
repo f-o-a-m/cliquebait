@@ -25,8 +25,8 @@ function make_account() {
 	mkdir -p /tmp/cliquebait/account-passwords
 	PASSWORD=`cat $DEFAULT_PASSWORD_PATH`
 	ADDRESS=`geth account new --lightkdf --keystore /tmp/cliquebait/make_account --password $DEFAULT_PASSWORD_PATH 2>/dev/null | sed 's/Address: {\([A-Fa-f0-9]*\)}/\1/'`
-	echo 0x$ADDRESS > tmp/cliquebait/accounts/accounts-$ADDRESS
-	echo $PASSWORD > tmp/cliquebait/account-passwords/account-passwords-$PASSWORD
+	echo 0x$ADDRESS > /tmp/cliquebait/accounts/accounts-$ADDRESS
+	echo $PASSWORD > /tmp/cliquebait/account-passwords/account-passwords-$ADDRESS
 	echo "made account $ADDRESS"
 }
 
@@ -114,9 +114,9 @@ function initialize_cliquebait() {
 	# accumulate results of make_account
 	mv /tmp/cliquebait/make_account/* $CBROOT/keystore
 	cat /tmp/cliquebait/accounts/accounts-* > $CBROOT/accounts
-	rm -r /tmp/cliquebait/accounts/
 	cat /tmp/cliquebait/account-passwords/account-passwords-* > $CBROOT/account-passwords
-	rm -r /tmp/cliquebait/account-passwords/
+	rm -rf /tmp/cliquebait/accounts/
+	rm -rf /tmp/cliquebait/account-passwords/
 
 	# Pre-seed the miner account first in case we have to seed in more passwords to unlock other accounts as well
 	export DEPLOY_ACCOUNT_ADDRESS=`cat $CBROOT/accounts | head -1`
