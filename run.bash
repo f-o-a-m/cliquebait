@@ -18,13 +18,21 @@ if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.8.0; then
 	export RPCARGS="${RPCARGS} --rpcvhosts=* "
 fi
 
+if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.9.0; then
+  echo 'adding --allow-insecure-unlock as we are in geth >= 1.9.0'
+  export RPCARGS="${RPCARGS} --allow-insecure-unlock "
+fi
 
 function make_account() {
 	mkdir -p /tmp/cliquebait/make_account
 	mkdir -p /tmp/cliquebait/accounts
 	mkdir -p /tmp/cliquebait/account-passwords
 	PASSWORD=`cat $DEFAULT_PASSWORD_PATH`
-	ADDRESS=`geth account new --lightkdf --keystore /tmp/cliquebait/make_account --password $DEFAULT_PASSWORD_PATH 2>/dev/null | sed 's/Address: {\([A-Fa-f0-9]*\)}/\1/'`
+	if $VERCOMP $STRIPPED_GETH_VERSION '<' 1.9.0; then
+		ADDRESS=`geth account new --lightkdf --keystore /tmp/cliquebait/make_account --password $DEFAULT_PASSWORD_PATH 2>/dev/null | sed 's/Address: {\([A-Fa-f0-9]*\)}/\1/'`
+  else
+		ADDRESS=`geth account new --lightkdf --keystore /tmp/cliquebait/make_account --password $DEFAULT_PASSWORD_PATH 2>/dev/null | grep 'Public address' | sed 's/.*0x\([A-Fa-f0-9]*\)$/\1/'`
+  fi
 	echo 0x$ADDRESS > /tmp/cliquebait/accounts/accounts-$ADDRESS
 	echo $PASSWORD > /tmp/cliquebait/account-passwords/account-passwords-$ADDRESS
 	echo "made account $ADDRESS"
