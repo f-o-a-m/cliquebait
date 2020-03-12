@@ -12,5 +12,6 @@ RUN \
   (cd go-ethereum && make all)                                                 && \
   cp go-ethereum/build/bin/geth go-ethereum/build/bin/bootnode /usr/local/bin/ && \
   apk del git go make gcc musl-dev linux-headers                               && \
-  rm -rf /go-ethereum && rm -rf /var/cache/apk/*
+  rm -rf /go-ethereum && rm -rf ~/.cache && rm -rf ~/go                        && \
+  rm -rf /var/cache/apk/* && rm -rf /cliquebait/.git
 
