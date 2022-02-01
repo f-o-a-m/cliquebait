@@ -54,7 +54,7 @@ function initialize_geth() {
 	geth --datadir=$GETHDATADIR init $GETHROOT/genesis.json
 }
 
-# $1 = source genesis, $2 = the FULL address (with 0x)
+# $1 = source genesis (file path), $2 = the FULL address (with 0x)
 function give_ether_in_genesis() {
 	mkdir -p /tmp/cliquebait/give_ether_in_genesis
 	BAREADDRESS=`echo $2 | sed s/0x//`
@@ -78,7 +78,7 @@ function give_ether_in_genesis() {
 #
 # todo: use jq to make sure it operates on extraData field specifically instead of just a dumb sed
 #
-# $1 = source genesis, $2 = the FULL address (with 0x)
+# $1 = source genesis (file path), $2 = the FULL address (with 0x)
 function set_genesis_signer_address() {
 	mkdir -p /tmp/cliquebait/set_genesis_signer_address
 	BAREADDRESS=`echo $2 | sed s/0x//`

@@ -3,12 +3,12 @@
 set -e
 set -x
 
-export IMAGE_NAME=${IMAGE_NAME:-"foamspace/cliquebait"}
+IMAGE_NAME=${IMAGE_NAME:-"foamspace/cliquebait"}
 
-# Download latest release
-# GETH_VERSION=$(curl -s https://api.github.com/repos/ethereum/go-ethereum/releases/latest | jq --raw-output .tag_name)
-
-export GETH_VERSION=${GETH_VERSION:-"v1.8.8"}
+if [ -z "$GETH_VERSION" ]
+then
+  GETH_VERSION=$(curl -s https://api.github.com/repos/ethereum/go-ethereum/releases/latest | jq --raw-output .tag_name)
+fi
 
 docker build --pull --build-arg GETH_VERSION=$GETH_VERSION -t $IMAGE_NAME:$GETH_VERSION .
 #docker tag $IMAGE_NAME:$GETH_VERSION $IMAGE_NAME:latest
