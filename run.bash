@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 VERCOMP='/cliquebait/vercomp.bash'
 STRIPPED_GETH_VERSION=`echo $GETH_VERSION | sed s/v//`

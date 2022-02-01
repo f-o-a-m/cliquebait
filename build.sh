@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 set -e
-set -x 
+set -x
 
 export IMAGE_NAME=${IMAGE_NAME:-"foamspace/cliquebait"}
 export GETH_VERSION=${GETH_VERSION:-"v1.8.8"}

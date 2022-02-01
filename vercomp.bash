@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Utility to compare two semantic versions
 # Adapted from https://stackoverflow.com/a/4025065/1763937
 # with some usability tweaks
