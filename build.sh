@@ -11,8 +11,7 @@ then
 fi
 
 docker build --pull --build-arg GETH_VERSION=$GETH_VERSION -t $IMAGE_NAME:$GETH_VERSION .
-#docker tag $IMAGE_NAME:$GETH_VERSION $IMAGE_NAME:latest
+# docker tag $IMAGE_NAME:$GETH_VERSION $IMAGE_NAME:latest
 
 # docker push $IMAGE_NAME:latest
 # docker push $IMAGE_NAME:$GETH_VERSION
-

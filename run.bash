@@ -8,7 +8,7 @@ export GETHROOT=/cbdata
 export CBROOT=$GETHROOT/_cliquebait
 export GETHDATADIR="$GETHROOT/ethereum"
 
-export RPCARGS='--http --http.addr 0.0.0.0 --http.corsdomain=* --http.api "admin,debug,web3,eth,txpool,personal,clique,miner,net" --ws --ws.addr 0.0.0.0 --ws.origins=* --ws.api "admin,debug,web3,eth,txpool,personal,clique,miner,net" '
+export RPCARGS='--http --http.addr 0.0.0.0 --http.corsdomain=* --http.api "admin,debug,web3,eth,txpool,personal,clique,miner,net" --ws --ws.addr 0.0.0.0 --ws.origins=* --ws.api "admin,debug,web3,eth,txpool,personal,clique,miner,net" --graphql '
 export DEFAULT_PASSWORD_PATH=${DEFAULT_PASSWORD_PATH:-"/cliquebait/default-password"}
 export ACCOUNTS_TO_CREATE=${ACCOUNTS_TO_CREATE:-"5"}
 export EXTERNAL_ALLOCS=${EXTERNAL_ALLOCS:-""}
