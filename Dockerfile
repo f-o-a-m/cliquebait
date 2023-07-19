@@ -1,8 +1,9 @@
-FROM alpine:3.11
+FROM alpine:3.17
 EXPOSE 8545
+EXPOSE 8546
+EXPOSE 8551
 EXPOSE 30303
 EXPOSE 30303/udp
-COPY . /cliquebait
 CMD "/cliquebait/run.bash"
 ARG GETH_VERSION
 ENV GETH_VERSION=$GETH_VERSION
@@ -15,3 +16,4 @@ RUN \
   rm -rf /go-ethereum && rm -rf ~/.cache && rm -rf ~/go                        && \
   rm -rf /var/cache/apk/* && rm -rf /cliquebait/.git
 
+COPY . /cliquebait
