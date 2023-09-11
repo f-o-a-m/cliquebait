@@ -192,7 +192,10 @@ ACCOUNTS_TO_UNLOCK=`cat $CBROOT/accounts | tr '\n' ',' | sed s/,$//`
 
 
 if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.10.0; then
-  export MINERARGS="--miner.threads 1 --miner.etherbase $(cat $CBROOT/etherbase)"
+  export MINERARGS="--miner.etherbase $(cat $CBROOT/etherbase)"
+  if $VERCOMP $STRIPPED_GETH_VERSION '<' 1.12.0; then
+    export MINERARGS="${MINERARGS} --miner.threads 1"
+  fi
 else
   export MINERARGS="--minerthreads 1 --etherbase $(cat $CBROOT/etherbase)"
 fi
