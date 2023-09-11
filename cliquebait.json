@@ -1,18 +1,20 @@
 {
   "config": {
     "chainId": 420123,
-    "homesteadBlock": 1,
-    "eip150Block": 2,
+    "homesteadBlock": 0,
+    "eip150Block": 0,
     "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-    "eip155Block": 3,
-    "eip158Block": 3,
-    "byzantiumBlock": 4,
-    "constantinopleBlock": 5,
-    "petersburgBlock": 6,
-    "istanbulBlock": 7,
-    "muirGlacierBlock": 8,
+    "eip155Block": 0,
+    "eip158Block": 0,
+    "byzantiumBlock": 0,
+    "constantinopleBlock": 0,
+    "petersburgBlock": 0,
+    "istanbulBlock": 0,
+    "muirGlacierBlock": 0,
+    "berlinBlock": 0,
+    "londonBlock": 0,
     "clique": {
-      "period": 3,
+      "period": 10,
       "epoch": 30000
     }
   },

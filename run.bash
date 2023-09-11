@@ -7,15 +7,19 @@ DEFAULT_ALLOC_WEI="0x3635C9ADC5DEA00000"
 export GETHROOT=/cbdata
 export CBROOT=$GETHROOT/_cliquebait
 export GETHDATADIR="$GETHROOT/ethereum"
-export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" '
 export DEFAULT_PASSWORD_PATH=${DEFAULT_PASSWORD_PATH:-"/cliquebait/default-password"}
 export ACCOUNTS_TO_CREATE=${ACCOUNTS_TO_CREATE:-"5"}
 export EXTERNAL_ALLOCS=${EXTERNAL_ALLOCS:-""}
 export ALLOC_WEI=${ALLOC_WEI:-""}
 
-if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.8.0; then
-	echo 'adding --rpcvhosts=* as we are in geth >= v1.8.0'
-	export RPCARGS="${RPCARGS} --rpcvhosts=* "
+if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.10.0; then
+  export RPCARGS='--http --http.addr=0.0.0.0 --http.corsdomain=* --http.vhosts=* --http.api=admin,debug,eth,miner,net,personal,shh,txpool,web3 --graphql --graphql.corsdomain=* --graphql.vhosts=* --ws --ws.addr=0.0.0.0 --ws.origins=* --ws.api=admin,debug,eth,miner,net,personal,shh,txpool,web3 '
+else
+  export RPCARGS='--rpc --rpcaddr 0.0.0.0 --rpccorsdomain=* --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --ws --wsaddr 0.0.0.0 --wsorigins=* --wsapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" '
+  if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.8.0; then
+  	echo 'adding --rpcvhosts=* as we are in geth >= v1.8.0 and < 1.10.0'
+  	export RPCARGS="${RPCARGS} --rpcvhosts=* "
+  fi
 fi
 
 if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.9.0; then
@@ -185,5 +189,16 @@ fi
 
 # figure out what accounts we need to unlock, and finally run cliquebait!
 ACCOUNTS_TO_UNLOCK=`cat $CBROOT/accounts | tr '\n' ',' | sed s/,$//`
-run_geth_bare --networkid="$(cat $CBROOT/chainid)" --mine --minerthreads 1 --etherbase $(cat $CBROOT/etherbase) \
+
+
+if $VERCOMP $STRIPPED_GETH_VERSION '>=' 1.10.0; then
+  export MINERARGS="--miner.etherbase $(cat $CBROOT/etherbase)"
+  if $VERCOMP $STRIPPED_GETH_VERSION '<' 1.12.0; then
+    export MINERARGS="${MINERARGS} --miner.threads 1"
+  fi
+else
+  export MINERARGS="--minerthreads 1 --etherbase $(cat $CBROOT/etherbase)"
+fi
+
+run_geth_bare --networkid="$(cat $CBROOT/chainid)" --mine $MINERARGS \
               --unlock "$ACCOUNTS_TO_UNLOCK" --password $CBROOT/account-passwords $@
