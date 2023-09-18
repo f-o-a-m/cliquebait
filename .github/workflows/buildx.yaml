@@ -6,10 +6,9 @@ on:
       geth_version:
         description: Geth Version
         required: true
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: cliquebait-runner
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -33,20 +32,28 @@ jobs:
         with:
           context: .
           platforms: linux/arm/v7,linux/arm64/v8,linux/amd64
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.inputs.geth_version }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cliquebait:${{ github.event.inputs.geth_version }}
           build-args: GETH_VERSION=${{ github.event.inputs.geth_version }}
-      - name: Build image
+      - name: Load amd64 into docker for local testing
         uses: docker/build-push-action@v4
         with:
           context: .
           platforms: linux/amd64
           load: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.inputs.geth_version }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cliquebait:${{ github.event.inputs.geth_version }}
           build-args: GETH_VERSION=${{ github.event.inputs.geth_version }}
       - name: Ensure it runs
         timeout-minutes: 2
         run: |
           docker run --rm -d -p 8545:8545 -e ACCOUNTS_TO_CREATE=10 ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.inputs.geth_version }}
           until curl http://localhost:8545 ; do sleep 1; done
+      - name: Push image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: linux/arm/v7,linux/arm64/v8,linux/amd64
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cliquebait:${{ github.event.inputs.geth_version }}
+          build-args: GETH_VERSION=${{ github.event.inputs.geth_version }}
 
 
