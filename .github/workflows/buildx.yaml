@@ -45,7 +45,7 @@ jobs:
       - name: Ensure it runs
         timeout-minutes: 2
         run: |
-          docker run --rm -d -p 8545:8545 -e ACCOUNTS_TO_CREATE=10 ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.inputs.geth_version }}
+          docker run --rm -d -p 8545:8545 -e ACCOUNTS_TO_CREATE=10 ${{ secrets.DOCKERHUB_USERNAME }}/cliquebait:${{ github.event.inputs.geth_version }}
           until curl http://localhost:8545 ; do sleep 1; done
       - name: Push image
         uses: docker/build-push-action@v4
